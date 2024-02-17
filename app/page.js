@@ -1,16 +1,41 @@
-import Image from "next/image";
+"use client";
+import { motion, useScroll, useTransform } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 import Item from "./components/Item";
+
+const images = ["./1.jpg", "./2.jpg", "./3.jpg", "./4.jpg"]
+
 export default function Home() {
 
+  const [backgroundColor, setBackgroundColor] = useState("#f00");
+
+  useEffect(() => {
+    const colors = ["#ff0", "#f0f", "#0ff"]; // Define your colors
+    const changeBackgroundOnScroll = () => {
+      const scrollPosition = window.scrollY; // Get current scroll position
+      const viewportHeight = window.innerHeight; // Get viewport height
+      const index = Math.floor(scrollPosition / viewportHeight); // Determine which 100vh segment the user is currently in
+      setBackgroundColor(colors[index % 5]); // Update background color based on current segment
+    };
+
+    // Listen for scroll events
+    window.addEventListener("scroll", changeBackgroundOnScroll);
+
+    // Cleanup function to remove event listener
+    return () => {
+      window.removeEventListener("scroll", changeBackgroundOnScroll);
+    };
+  }, []);
+
   return (
-    <div>
-      <header className="fixed z-50 top-3 left-3 font-bold text-4xl">BACKSTAGE TALKS</header>
-      <Item backgroundColor={"#2f27ce"} source={""} />
-      <Item backgroundColor={"#fb5bfe"} source={""} />
-      <Item backgroundColor={"#6da18e"} source={""} />
-      <Item backgroundColor={"#b48ab2"} source={""} />
-      <Item backgroundColor={"#ce4582"} source={""} />
-      <Item backgroundColor={"#39d69b"} source={""} />
-    </div>
+    <section
+      style={{
+        backgroundColor: backgroundColor,
+        transition: "background-color 0.5s ease-out", // css transition for background color
+      }}
+   
+    >
+      {images.map((image, index) => <Item key={index} source={image} index={index} /> )}
+    </section>
   );
 }
